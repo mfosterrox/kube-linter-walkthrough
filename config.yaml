@@ -1,0 +1,9 @@
+checks:
+  #addAllBuiltIn: true
+  #doNotAutoAddDefaults: true
+  # include:
+  #   - "privileged-container"
+  #   - "run-as-non-root"
+  #exclude:
+  #  - "no-readiness-probe"
+  #  - "no-liveness-probe"

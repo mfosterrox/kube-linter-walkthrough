@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: non-compliant
+  namespace: my-namespace
+  annotations:
+    #ignore-check.kube-linter.io/run-as-non-root: "This deployment needs to run as privileged because it needs kernel access"
+    #ignore-check.kube-linter.io/unset-memory-requirements: "No limits currently defined"
+spec:
+  replicas: 1
+  minReadySeconds: 15
+  selector:
+    matchLabels:
+      app: non-compliant
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      namespace: my-namespace
+      labels:
+        app: non-compliant
+    spec:
+      serviceAccountName: nonexistent
+      containers:
+      - image: nginx:latest
+        name: nginx
+        env:
+        - name: AWS_SECRET_KEY
+          value: b2dfac006d88dd4f0b1d68f690184a09
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-service-account
+  namespace: my-namespace
+  labels:
+    app.kubernetes.io/name: my-app
+  annotations:
+    team: database
+    apiVersion: apps/v1
+
