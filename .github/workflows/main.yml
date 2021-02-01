@@ -37,4 +37,5 @@ jobs:
       - name: Run kube-linter lint on the repo
         run: |
           cd "${GITHUB_WORKSPACE}"
-          ./kube-linter lint yamls/non-compliant-app.yaml
+          ./kube-linter lint manifests/carts-db/ --config configs/config_db_carts.yaml
+          ./kube-linter lint manifests/orders-db/ --config configs/config_db_orders.yaml

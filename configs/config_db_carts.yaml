@@ -1,0 +1,39 @@
+checks:
+  addAllBuiltIn: true
+  exclude:
+  - dangling-service
+  - default-service-account
+  - deprecated-service-account-field
+  - env-var-secret
+  - mismatching-selector
+  - no-anti-affinity
+  - no-extensions-v1beta
+  - no-liveness-probe
+  - no-read-only-root-fs
+  - no-readiness-probe
+  - non-existent-service-account
+  - privileged-container
+  - required-annotation-email 
+  - required-label-owner
+  # - run-as-non-root 
+  - ssh-port
+  - unset-cpu-requirements
+  - unset-memory-requirements
+  - writable-host-mount
+customChecks:
+  - name: required-label-release-deployment
+    template: required-label
+    params:
+      key: env
+    remediation: please add a environment label to the deployment (dev, test, staging, production)
+    scope:
+      objectKinds:
+        - Service
+  - name: required-label-release-service
+    template: required-label
+    params:
+      key: env
+    remediation: please add a environment label to the service (dev, test, staging, production)
+    scope:
+      objectKinds:
+        - Service
