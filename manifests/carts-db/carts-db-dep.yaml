@@ -6,6 +6,8 @@ metadata:
   labels:
     name: carts-db
   namespace: sock-shop
+  annotations:
+    ignore-check.kube-linter.io/run-as-non-root: "this deployment needs privileged access to the host"
 spec:
   replicas: 1
   selector:

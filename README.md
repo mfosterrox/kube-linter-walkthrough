@@ -1,1 +1,1 @@
-# kube-linter-demo
+# kube-linter-walkthrough

@@ -38,4 +38,3 @@ metadata:
   annotations:
     team: database
     apiVersion: apps/v1
-
