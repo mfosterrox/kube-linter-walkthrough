@@ -29,11 +29,11 @@ customChecks:
     scope:
       objectKinds:
         - Service
-  - name: required-label-release-service
-    template: required-label
-    params:
-      key: env
-    remediation: please add a environment label to the service (dev, test, staging, production)
-    scope:
-      objectKinds:
-        - Service
+  # - name: required-label-release-service
+  #   template: required-label
+  #   params:
+  #     key: env
+  #   remediation: please add a environment label to the service (dev, test, staging, production)
+  #   scope:
+  #     objectKinds:
+  #       - Service

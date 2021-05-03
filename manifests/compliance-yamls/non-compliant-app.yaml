@@ -4,8 +4,8 @@ metadata:
   name: non-compliant
   namespace: my-namespace
   annotations:
-    #ignore-check.kube-linter.io/run-as-non-root: "This deployment needs to run as privileged because it needs kernel access"
-    #ignore-check.kube-linter.io/unset-memory-requirements: "No limits currently defined"
+    ignore-check.kube-linter.io/run-as-non-root: "This deployment needs to run as privileged because it needs kernel access"
+    ignore-check.kube-linter.io/unset-memory-requirements: "No limits currently defined"
 spec:
   replicas: 1
   minReadySeconds: 15
