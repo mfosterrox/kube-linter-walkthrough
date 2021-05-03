@@ -50,28 +50,28 @@ jobs:
           cd "${GITHUB_WORKSPACE}"
           ./kube-linter lint manifests/orders-db/ --config configs/config_db_orders.yaml
 
-  staging:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download latest kube-linter
-        run: |
-          LOCATION=$(curl -s https://api.github.com/repos/stackrox/kube-linter/releases/latest \
-          | grep "tag_name" \
-          | awk '{print "https://github.com/stackrox/kube-linter/releases/download/" substr($2, 2, length($2)-3) "/kube-linter-linux.tar.gz"}')
-          curl -L -o kube-linter-linux.tar.gz $LOCATION
-          tar -xf kube-linter-linux.tar.gz -C "${GITHUB_WORKSPACE}/"
+  # staging:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Download latest kube-linter
+  #       run: |
+  #         LOCATION=$(curl -s https://api.github.com/repos/stackrox/kube-linter/releases/latest \
+  #         | grep "tag_name" \
+  #         | awk '{print "https://github.com/stackrox/kube-linter/releases/download/" substr($2, 2, length($2)-3) "/kube-linter-linux.tar.gz"}')
+  #         curl -L -o kube-linter-linux.tar.gz $LOCATION
+  #         tar -xf kube-linter-linux.tar.gz -C "${GITHUB_WORKSPACE}/"
 
-      # lint the cart-db yaml files using the cart configuration
-      # stop on error
-      - name: Run kube-linter lint on the repo
-        run: |
-          cd "${GITHUB_WORKSPACE}"
-          ./kube-linter lint manifests/carts-db/ --config configs/config_db_carts.yaml
+  #     # lint the cart-db yaml files using the cart configuration
+  #     # stop on error
+  #     - name: Run kube-linter lint on the repo
+  #       run: |
+  #         cd "${GITHUB_WORKSPACE}"
+  #         ./kube-linter lint manifests/carts-db/ --config configs/config_db_carts.yaml
           
-      # lint the orders-db yaml files using the orders configuration
-      # stop on error
-      - name: Run kube-linter lint on the repo
-        run: |
-          cd "${GITHUB_WORKSPACE}"
-          ./kube-linter lint manifests/orders-db/ --config configs/config_db_orders.yaml
+  #     # lint the orders-db yaml files using the orders configuration
+  #     # stop on error
+  #     - name: Run kube-linter lint on the repo
+  #       run: |
+  #         cd "${GITHUB_WORKSPACE}"
+  #         ./kube-linter lint manifests/orders-db/ --config configs/config_db_orders.yaml
