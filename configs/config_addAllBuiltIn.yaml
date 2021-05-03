@@ -1,6 +1,6 @@
 checks:
   addAllBuiltIn: true
-#   exclude:
+  exclude:
 #   - dangling-service
 #   - default-service-account
 #   - deprecated-service-account-field
@@ -15,7 +15,7 @@ checks:
 #   - privileged-container
 #   - required-annotation-email 
 #   - required-label-owner
-#   - run-as-non-root
+#   - run-as-non-root #disabling check for testing purposes
 #   - ssh-port
 #   - unset-cpu-requirements
 #   - unset-memory-requirements
