@@ -48,3 +48,22 @@ jobs:
         run: |
           cd "${GITHUB_WORKSPACE}"
           ./kube-linter lint manifests/carts-db/ --config configs/config_carts_db_strict.yaml
+      
+      - name: Run kube-linter on a sample file with SARIF output
+        run: ./kube-linter lint --format=sarif manifests/carts-db/carts-db-dep.yaml > results.sarif
+        continue-on-error: true
+
+      - name: Dump output file and check it is not empty
+        run: jq -es 'if . == [] then null else .[] | . end' results.sarif
+
+      - name: Upload output file as GitHub artifact for manual investigation
+        uses: actions/upload-artifact@v2
+        with:
+          name: results.sarif
+          path: results.sarif
+
+      - name: Upload SARIF output file to GitHub
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
+      
