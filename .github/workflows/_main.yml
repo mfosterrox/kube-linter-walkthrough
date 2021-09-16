@@ -2,26 +2,38 @@
 
 name: main
 
-on:
-  - pull_request
-  - push
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build-and-test"
   build-and-test:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           # Checkout all repo history to make tags available for figuring out kube-linter version during build.
           fetch-depth: 0
-
+      
       - name: Read Go version from go.mod
         run: echo "GO_VERSION=$(grep -E "^go\s+[0-9.]+$" go.mod | cut -d " " -f 2)" >> $GITHUB_ENV
+      
       - name: Setup Go environment
         uses: actions/setup-go@v2
         with:
           go-version: ${{ env.GO_VERSION }}
-
+      
       - name: Cache Go modules
         uses: actions/cache@v2
         with:
@@ -29,11 +41,31 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+      
       - name: Build binaries
         run: make build
-
+      
       - name: Print kube-linter version
         run: .gobin/kube-linter version
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # lint the cart-db yaml files using the cart configuration
+      # continue on error
+      - name: Run kube-linter lint on the repo
+        continue-on-error: true
+        run: |
+          cd "${GITHUB_WORKSPACE}"
+          ./kube-linter lint manifests/carts-db/ --config configs/config_carts_db_strict.yaml
+          
+      # lint the orders-db yaml files using the orders configuration
+      # continue on error
+      - name: Run kube-linter lint on the repo
+        continue-on-error: true
+        run: |
+          cd "${GITHUB_WORKSPACE}"
+          ./kube-linter lint manifests/carts-db/ --config configs/config_carts_db_permissive.yaml
 
       - name: Run kube-linter on a sample file with SARIF output
         run: .gobin/kube-linter lint --format=sarif manifests/carts-db/ --config configs/config_carts_db_strict.yaml > results.sarif
@@ -42,13 +74,13 @@ jobs:
       - name: Dump output file and check it is not empty
         # The if part will generate no-zero exit code if the file is empty. See https://github.com/stedolan/jq/issues/1142#issuecomment-432003984
         run: jq -es 'if . == [] then null else .[] | . end' results.sarif
-
+      
       - name: Upload output file as GitHub artifact for manual investigation
         uses: actions/upload-artifact@v2
         with:
           name: results.sarif
           path: results.sarif
-
+      
       - name: Check if output file is valid according to SARIF schema
         run: |
           set -ex
@@ -56,6 +88,8 @@ jobs:
           schema=$(jq -r '.["$schema"]' results.sarif)
           [ -n "$schema" ] && wget -nv $schema
           yajsv -s $(basename $schema) results.sarif
+      
+
       - name: Upload SARIF output file to GitHub
         uses: github/codeql-action/upload-sarif@v1
         with:
