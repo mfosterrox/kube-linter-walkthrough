@@ -40,7 +40,7 @@ jobs:
         continue-on-error: true
         run: |
           cd "${GITHUB_WORKSPACE}"
-          ./kube-linter lint manifests/carts-db/ --config configs/config_db_carts.yaml
+          ./kube-linter lint manifests/carts-db/ --config configs/config_carts_db_strict.yaml
           
       # lint the orders-db yaml files using the orders configuration
       # continue on error
@@ -48,30 +48,23 @@ jobs:
         continue-on-error: true
         run: |
           cd "${GITHUB_WORKSPACE}"
-          ./kube-linter lint manifests/orders-db/ --config configs/config_db_orders.yaml
+          ./kube-linter lint manifests/carts-db/ --config configs/config_carts_db_permissive.yaml
 
-  # staging:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Download latest kube-linter
-  #       run: |
-  #         LOCATION=$(curl -s https://api.github.com/repos/stackrox/kube-linter/releases/latest \
-  #         | grep "tag_name" \
-  #         | awk '{print "https://github.com/stackrox/kube-linter/releases/download/" substr($2, 2, length($2)-3) "/kube-linter-linux.tar.gz"}')
-  #         curl -L -o kube-linter-linux.tar.gz $LOCATION
-  #         tar -xf kube-linter-linux.tar.gz -C "${GITHUB_WORKSPACE}/"
+      - name: Run kube-linter on a sample file with SARIF output
+        run: .gobin/kube-linter lint --format=sarif manifests/carts-db/ > results.sarif
+        continue-on-error: true
 
-  #     # lint the cart-db yaml files using the cart configuration
-  #     # stop on error
-  #     - name: Run kube-linter lint on the repo
-  #       run: |
-  #         cd "${GITHUB_WORKSPACE}"
-  #         ./kube-linter lint manifests/carts-db/ --config configs/config_db_carts.yaml
-          
-  #     # lint the orders-db yaml files using the orders configuration
-  #     # stop on error
-  #     - name: Run kube-linter lint on the repo
-  #       run: |
-  #         cd "${GITHUB_WORKSPACE}"
-  #         ./kube-linter lint manifests/orders-db/ --config configs/config_db_orders.yaml
+      - name: Dump output file and check it is not empty
+        # The if part will generate no-zero exit code if the file is empty. See https://github.com/stedolan/jq/issues/1142#issuecomment-432003984
+        run: jq -es 'if . == [] then null else .[] | . end' results.sarif
+      
+      - name: Upload output file as GitHub artifact for manual investigation
+        uses: actions/upload-artifact@v2
+        with:
+          name: results.sarif
+          path: results.sarif
+
+      - name: Upload SARIF output file to GitHub
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif

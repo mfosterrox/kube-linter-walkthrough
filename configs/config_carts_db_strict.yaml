@@ -42,16 +42,19 @@ checks:
     # - wildcard-in-rules
     # - writable-host-mount
 customChecks:
-  - name: required-annotation-responsible
-    template: required-annotation
-    params:
-      key: kube-linter/demo
-    remediation: please add the "kube-linter/demo" annotation to the deployment
-  - name: required-label-release
+  - name: required-label-release-deployment
     template: required-label
     params:
-      key: team
-    remediation: please add a team label to the service
+      key: env
+    remediation: please add a environment label to the deployment (dev, test, staging, production)
     scope:
       objectKinds:
-        - deployment
+        - Service
+  - name: required-label-release-service
+    template: required-label
+    params:
+      key: env
+    remediation: please add a environment label to the service (dev, test, staging, production)
+    scope:
+      objectKinds:
+        - Service
