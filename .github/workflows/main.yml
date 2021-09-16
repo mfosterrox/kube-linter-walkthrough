@@ -1,4 +1,5 @@
-# This is a basic workflow to help you get started with Actions
+
+      # This is a basic workflow to help you get started with Actions
 
 name: main
 
@@ -6,7 +7,6 @@ name: main
 # events but only for the main branch
 
 on:
-
   - push
   - pull_request
 
@@ -62,4 +62,3 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: results.sarif
-      
