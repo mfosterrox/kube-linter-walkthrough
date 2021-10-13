@@ -1,6 +1,6 @@
 checks:
-  addAllBuiltIn: true
-  exclude:
+  doNotAutoAddDefaults: true
+  include:
     # - access-to-create-pods
     # - access-to-secrets
     # - cluster-admin-role-binding
@@ -24,14 +24,14 @@ checks:
     # - no-readiness-probe
     # - no-rolling-update-strategy
     # - non-existent-service-account
-    # - privilege-escalation-container
-     - privileged-container
+    - privilege-escalation-container
+    - privileged-container
     # - privileged-ports
     # - read-secret-from-env-var
     # - required-annotation-email
     # - required-label-release-deployment
     # - required-label-owner
-     - run-as-non-root
+    - run-as-non-root
     # - sensitive-host-mounts
     # - ssh-port
     # - unsafe-proc-mount
@@ -42,19 +42,16 @@ checks:
     # - wildcard-in-rules
     # - writable-host-mount
 customChecks:
-  - name: required-label-release-deployment
+  - name: required-annotation-responsible
+    template: required-annotation
+    params:
+      key: kube-linter/demo
+    remediation: please add the "kube-linter/demo" annotation to the deployment
+  - name: required-label-release
     template: required-label
     params:
-      key: env
-    remediation: please add a environment label to the deployment (dev, test, staging, production)
+      key: team
+    remediation: please add a team label to the service
     scope:
       objectKinds:
-        - Service
-  - name: required-label-release-service
-    template: required-label
-    params:
-      key: env
-    remediation: please add a environment label to the service (dev, test, staging, production)
-    scope:
-      objectKinds:
-        - Service
+        - deployment
