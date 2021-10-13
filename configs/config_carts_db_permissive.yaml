@@ -26,7 +26,7 @@ checks:
     # - non-existent-service-account
     - privilege-escalation-container
     - privileged-container
-    - privileged-ports
+    # - privileged-ports
     # - read-secret-from-env-var
     # - required-annotation-email
     # - required-label-release-deployment
